@@ -1,9 +1,12 @@
 import Head from 'next/head';
 import { useState, useEffect } from 'react';
-import Image from 'next/image';
 import styles from '../styles/Home.module.css';
-import { getWeatherIcon } from '../utils/helper-functions';
-import SolmedSky from '../public/solmedsky.svg';
+import {
+  getWeatherIcon,
+  isRaining,
+  getDayName,
+  getDegreeColor,
+} from '../utils/helper-functions';
 
 type Weather = {
   data: {
@@ -27,13 +30,12 @@ type WeatherData = {
 
 export default function Home() {
   const [data, setData] = useState<WeatherData>();
-  const [query, setQuery] = useState('react');
   const [search, setSearch] = useState('react');
-  console.log(data);
+
   useEffect(() => {
     const fetchData = async () => {
       const res = await fetch(
-        `https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=60&lon=11`
+        `https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=60&lon=5.3`
       );
       const json = await res.json();
       setData(json.properties);
@@ -42,12 +44,6 @@ export default function Home() {
   }, [search]);
 
   const tomorrow = new Date().getDate() + 1;
-
-  function getDayName(dateStr: any, locale: string) {
-    let date = new Date(dateStr);
-    return date.toLocaleDateString(locale, { weekday: 'long' });
-  }
-
   const tommorowData = data?.timeseries.filter(
     (t) => new Date(t.time).getDate() === tomorrow
   );
@@ -61,7 +57,7 @@ export default function Home() {
   const weatherIcon = data?.timeseries[0].data.next_1_hours.summary.symbol_code;
 
   return (
-    <div className={styles.container}>
+    <div>
       <Head>
         <title>Weather App</title>
         <meta name='description' content='Hvordan er vaeret der du er?' />
@@ -69,79 +65,122 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-        <h1 className={styles.title}>Hvordan er været der du er?</h1>
-        {/* <form>
-          <input
-            placeholder='Navn på sted'
-            type='text'
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-          />
-          <button onClick={() => setSearch(query)}>Search</button>
-        </form> */}
-        <p>I Oslo akkurat nå:</p>
-        <div>{getWeatherIcon(weatherIcon)}</div>
-        <p style={{ fontSize: '2rem' }}>{degrees}</p>
+        <div className={styles.bigCard}>
+          <h1 className={styles.title}>Regner det i Bergen?</h1>
 
-        <div style={{ display: 'flex', columnGap: '3rem' }}>
+          <div>{getWeatherIcon(weatherIcon)}</div>
+          <div style={{ fontSize: '2rem' }}>{isRaining(weatherIcon)}</div>
+
+          <p
+            style={{
+              fontSize: '2rem',
+              margin: '0',
+              color: `${getDegreeColor(degrees)}`,
+            }}
+          >
+            {degrees}
+          </p>
+        </div>
+
+        <div style={{ width: '100%', padding: '20px' }}>
           {tommorowData && (
-            <div>
-              <p>{getDayName(new Date(), 'no')}</p>
-              <p>
-                07:00 {tommorowData[8].data.instant.details.air_temperature}
+            <div className={styles.card} style={{ marginBottom: '20px' }}>
+              <p
+                style={{
+                  textAlign: 'center',
+                  fontWeight: 'bold',
+                  textTransform: 'capitalize',
+                }}
+              >
+                {getDayName(new Date(), 'no')}
               </p>
-              <div>
-                {getWeatherIcon(
-                  tommorowData[8].data.next_1_hours.summary.symbol_code
-                )}
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <p>07:00</p>
+                <div>
+                  {getWeatherIcon(
+                    tommorowData[8].data.next_1_hours.summary.symbol_code
+                  )}
+                </div>
+                <p style={{ color: `${getDegreeColor(degrees)}` }}>
+                  {tommorowData[8].data.instant.details.air_temperature}
+                </p>
               </div>
-              <p>
-                12:00 {tommorowData[13].data.instant.details.air_temperature}
-              </p>
-              <div>
-                {getWeatherIcon(
-                  tommorowData[13].data.next_1_hours.summary.symbol_code
-                )}
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <p>12:00</p>
+                <div>
+                  {getWeatherIcon(
+                    tommorowData[13].data.next_1_hours.summary.symbol_code
+                  )}
+                </div>
+                <p style={{ color: `${getDegreeColor(degrees)}` }}>
+                  {tommorowData[13].data.instant.details.air_temperature}
+                </p>
               </div>
-              <p>
-                20:00 {tommorowData[21].data.instant.details.air_temperature}
-              </p>
-              <div>
-                {getWeatherIcon(
-                  tommorowData[21].data.next_1_hours.summary.symbol_code
-                )}
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <p>20:00</p>
+                <div>
+                  {getWeatherIcon(
+                    tommorowData[21].data.next_1_hours.summary.symbol_code
+                  )}
+                </div>
+                <p style={{ color: `${getDegreeColor(degrees)}` }}>
+                  {tommorowData[21].data.instant.details.air_temperature}
+                </p>
               </div>
             </div>
           )}
           {dayAfterTomorrowData && (
-            <div>
-              <p>{getDayName(dayAfterTomorrow, 'no')}</p>
-              <p>
-                07:00{' '}
-                {dayAfterTomorrowData[8].data.instant.details.air_temperature}
+            <div className={styles.card}>
+              <p
+                style={{
+                  textAlign: 'center',
+                  fontWeight: 'bold',
+                  textTransform: 'capitalize',
+                }}
+              >
+                {getDayName(dayAfterTomorrow, 'no')}
               </p>
-              <div>
-                {getWeatherIcon(
-                  dayAfterTomorrowData[8].data.next_1_hours.summary.symbol_code
-                )}
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <p>07:00</p>
+                <div>
+                  {getWeatherIcon(
+                    dayAfterTomorrowData[8].data.next_1_hours.summary
+                      .symbol_code
+                  )}
+                </div>
+                <p style={{ color: `${getDegreeColor(degrees)}` }}>
+                  {dayAfterTomorrowData[8].data.instant.details.air_temperature}
+                </p>
               </div>
-              <p>
-                12:00{' '}
-                {dayAfterTomorrowData[13].data.instant.details.air_temperature}
-              </p>
-              <div>
-                {getWeatherIcon(
-                  dayAfterTomorrowData[8].data.next_1_hours.summary.symbol_code
-                )}
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <p>12:00</p>
+                <div>
+                  {getWeatherIcon(
+                    dayAfterTomorrowData[13].data.next_1_hours.summary
+                      .symbol_code
+                  )}
+                </div>
+                <p style={{ color: `${getDegreeColor(degrees)}` }}>
+                  {
+                    dayAfterTomorrowData[13].data.instant.details
+                      .air_temperature
+                  }
+                </p>
               </div>
-              <p>
-                20:00{' '}
-                {dayAfterTomorrowData[21].data.instant.details.air_temperature}
-              </p>
-              <div>
-                {getWeatherIcon(
-                  dayAfterTomorrowData[8].data.next_1_hours.summary.symbol_code
-                )}
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <p>20:00</p>
+                <div>
+                  {getWeatherIcon(
+                    dayAfterTomorrowData[21].data.next_1_hours.summary
+                      .symbol_code
+                  )}
+                </div>
+                <p style={{ color: `${getDegreeColor(degrees)}` }}>
+                  {
+                    dayAfterTomorrowData[21].data.instant.details
+                      .air_temperature
+                  }
+                </p>
               </div>
             </div>
           )}
