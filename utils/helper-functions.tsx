@@ -37,7 +37,7 @@ export const isRaining = (icon: any) => {
     case 'heavyrain':
       return <p>Ja, selvfølgelig.</p>;
   }
-  return <p>Overraskende ikke.</p>;
+  return <p>Faktisk ikke.</p>;
 };
 
 export const getDayName = (dateStr: any, locale: string) => {
