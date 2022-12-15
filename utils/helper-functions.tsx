@@ -5,6 +5,7 @@ import Halvmaane from '../public/halvmaane.svg';
 import Sno from '../public/snø.svg';
 import SolMedSky from '../public/solmedsky.svg';
 import Sol from '../public/sol.svg';
+import Regn from '../public/regn.svg';
 
 export const getWeatherIcon = (icon: any) => {
   switch (icon) {
@@ -22,6 +23,14 @@ export const getWeatherIcon = (icon: any) => {
       );
     case 'clearsky_night':
       return <Image width={'40'} height={'40'} alt='natt' src={Natt} />;
+    case 'rain':
+      return <Image width={'40'} height={'40'} alt='regn' src={Regn} />;
+    case 'heavyrain':
+      return <Image width={'40'} height={'40'} alt='regn' src={Regn} />;
+    case 'lightrain':
+      return <Image width={'40'} height={'40'} alt='regn' src={Regn} />;
+    case 'sleet':
+      return <Image width={'40'} height={'40'} alt='snø' src={Sno} />;
 
     default:
       return <Image width={'40'} height={'40'} alt='sky' src={Sky} />;

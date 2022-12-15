@@ -20,6 +20,11 @@ type Weather = {
         symbol_code: string;
       };
     };
+    next_6_hours: {
+      summary: {
+        symbol_code: string;
+      };
+    };
   };
   time: Date;
 };
@@ -30,7 +35,6 @@ type WeatherData = {
 
 export default function Home() {
   const [data, setData] = useState<WeatherData>();
-  const [search, setSearch] = useState('react');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -41,7 +45,7 @@ export default function Home() {
       setData(json.properties);
     };
     fetchData();
-  }, [search]);
+  }, []);
 
   const tomorrow = new Date().getDate() + 1;
   const tommorowData = data?.timeseries.filter(
@@ -49,6 +53,7 @@ export default function Home() {
   );
 
   const dayAfterTomorrow = new Date().getDate() + 2;
+
   const dayAfterTomorrowData = data?.timeseries.filter(
     (t) => new Date(t.time).getDate() === dayAfterTomorrow
   );
@@ -117,14 +122,14 @@ export default function Home() {
                 </p>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <p>20:00</p>
+                <p>18:00</p>
                 <div>
                   {getWeatherIcon(
-                    tommorowData[21].data.next_1_hours.summary.symbol_code
+                    tommorowData[19].data.next_1_hours.summary.symbol_code
                   )}
                 </div>
                 <p style={{ color: `${getDegreeColor(degrees)}` }}>
-                  {tommorowData[21].data.instant.details.air_temperature}
+                  {tommorowData[19].data.instant.details.air_temperature}
                 </p>
               </div>
             </div>
@@ -168,16 +173,16 @@ export default function Home() {
                 </p>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <p>20:00</p>
+                <p>18:00</p>
                 <div>
                   {getWeatherIcon(
-                    dayAfterTomorrowData[21].data.next_1_hours.summary
+                    dayAfterTomorrowData[19].data.next_6_hours.summary
                       .symbol_code
                   )}
                 </div>
                 <p style={{ color: `${getDegreeColor(degrees)}` }}>
                   {
-                    dayAfterTomorrowData[21].data.instant.details
+                    dayAfterTomorrowData[19].data.instant.details
                       .air_temperature
                   }
                 </p>
